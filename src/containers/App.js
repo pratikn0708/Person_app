@@ -1,24 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
 // import Radium, {StyleRoot} from 'radium';
-import styled from 'styled-components';
-import Person from './Person/Person';
-
-// const StyledButton = styled.button`
-// background-color: ${props => props.alt ? 'red' : 'green'};
-// color: white;
-// font: inherit;
-// border: 1px solid blue;
-// padding: 8px;
-// cursor: pointer;
-// &:hover {
-//   background-color: ${props => props.alt ? 'salmon' : 'lightgreen'};
-//   color: black;
-// }
-// `;
-
+// import styled from 'styled-components';
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    console.log('[App.js] constructor');
+  }
+
   state = {
     persons: [
       { id: 1, name: 'Pratik', age: 28 },
@@ -26,20 +18,33 @@ class App extends Component {
       { id: 3, name: 'James Bond', age: 26 }
     ],
     otherState: 'some other value',
-    showPersons: false
+    showPersons: false,
+    showCockpit: true,
+    changeCounter: 0,
+    authenticated: false
   }
 
-  // switchNameHandler = (newName) => {
-  //   // console.log('Was clicked!');
-  //   // DON'T DO THIS: this.state.persons[0].name = 'Maximilian';
-  //   this.setState({
-  //     persons: [
-  //       { name: newName, age: 28 },
-  //       { name: 'Tom', age: 29 },
-  //       { name: 'James', age: 27 }
-  //     ]
-  //   })
+  static getDerivedStateFromProps(props, state) {
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+
+  // componentWillMount() {
+  //   console.log('[App.js] componentWillMount');
   // }
+
+  componentDidMount() {
+    console.log('[App.js] componentDidMount');
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('[App.js] shouldComponentUpdate');
+    return true;
+  }
+
+  componentDidUpdate() {
+    console.log('[App.js] componentDidUpdate');
+  }
 
   deletePersonHandler = (personIndex) => {
     const persons = [...this.state.persons]
@@ -62,12 +67,21 @@ class App extends Component {
     const persons = [...this.state.persons];
     persons[personIndex] = person;
 
-    this.setState({ persons: persons });
-  }
+    this.setState((prevSate, props) => {
+      return {
+        persons: persons,
+        changeCounter: prevSate.changeCounter + 1
+      }
+    });
+  };
 
   togglePersonsHandler = () => {
     const doesShow = this.state.showPersons;
     this.setState({ showPersons: !doesShow });
+  }
+
+  logInHandler = () => {
+    this.setState({ authenticated: true });
   }
 
   render() {
@@ -83,53 +97,38 @@ class App extends Component {
     //     color: 'black'
     //   }
     // };
-    const btnClasses=['button']
 
 
     let persons = null;
 
     if (this.state.showPersons) {
       persons = (
-        <div>
-          {this.state.persons.map((person, index) => {
-            return <Person
-              click={() => this.deletePersonHandler(index)}
-              name={person.name}
-              age={person.age}
-              key={person.id}
-              changed={(event) => this.nameChangedHandler(event, person.id)}
-            />
-          })}
-        </div>
+        <Persons persons={this.state.persons}
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangedHandler}
+          isAuthenticated={this.state.authenticated}
+        />
       );
       // style.backgroundColor = 'red';
       // style[':hover'] = {
       //   backgroundColor: 'salmon',
       //   color: 'black'
       // };
-      btnClasses.push('red');
     }
 
-    // let classes=['red','bold'].join(' ');  // "red bold"
-    const classes = [];
-    if (this.state.persons.length <= 2) {
-      classes.push('red'); //classes=['red']
-    }
-    if (this.state.persons.length <= 1) {
-      classes.push('bold'); //classes=['red','bold']
-    }
 
     return (
       <div>
         <div className="App">
-          <h1>Hi, I'm a React App</h1>
-          <p className={classes.join(' ')}>This is really working!</p>
-          {/* <StyledButton */}
-          <button className={btnClasses.join(' ')}
-            // alt={this.state.showPersons}
-            onClick={this.togglePersonsHandler}>Toggle Persons
-            </button>
-          {/* </StyledButton> */}
+          <button onClick={() => this.setState({ showCockpit: false })}>
+            Remove Cockpit
+          </button>
+          {this.state.showCockpit ? <Cockpit
+            showPersons={this.state.showPersons}
+            personsLength={this.state.persons.length}
+            clicked={this.togglePersonsHandler}
+            login={this.logInHandler}
+          /> : null}
           {persons}
         </div>
       </div>
