@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
+import AuthContext from '../../context/auth-context';
 
 const Cockpit = (props) => {
 
     const toggleRef = useRef(null);
+    const authContext = useContext(AuthContext);
 
     // you can use useEffect more than once 
     useEffect(() => {
@@ -45,7 +47,7 @@ const Cockpit = (props) => {
                 // alt={this.state.showPersons}
                 onClick={props.clicked}>Toggle Persons
           </button>
-          <button className={btnClasses.join(' ')} onClick={props.login}>Log In</button>
+            <button className={btnClasses.join(' ')} onClick={authContext.login}>Log In</button>
         </div>
     );
 };

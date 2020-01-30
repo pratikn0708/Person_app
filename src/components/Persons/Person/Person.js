@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import Aux from '../../../hoc/Auxiliary'
 import './Person.css';
+import AuthContext from '../../../context/auth-context';
 
 const StyleDiv = styled.div`
     width: 60%;
@@ -22,8 +23,11 @@ class Person extends Component {
         this.inputElementRef = React.createRef();
     };
 
+    static contextType = AuthContext;
+
     componentDidMount() {
         this.inputElementRef.current.focus();
+        console.log(this.context.authenticated);
     };
 
     render() {
@@ -32,7 +36,7 @@ class Person extends Component {
             // <div className="Person" style={style}>
             <Aux>
                 <StyleDiv>
-                    {this.props.isAuth ? <p>Authenticated</p> : <p>Please Log In</p>}
+                    {this.context.authenticated ? <p>Authenticated</p> : <p>Please Log In</p>}
                     < p onClick={this.props.click} > I'm {this.props.name} and I am {this.props.age} years old!</p>
                     < p > {this.props.children}</p >
                     <input type="text"
